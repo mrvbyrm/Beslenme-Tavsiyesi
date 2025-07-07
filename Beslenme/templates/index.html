@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Diyet Planı ve Yemek Önerisi</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+    <div class="container mt-5">
+        <h1 class="text-center">Diyet Planı ve Yemek Önerisi</h1>
+
+        <!-- Kullanıcı Bilgisi Formu -->
+        <form method="POST" action="/health_check">
+            <div class="form-group">
+                <label for="age">Yaş:</label>
+                <input type="number" class="form-control" id="age" name="age" required>
+            </div>
+            <div class="form-group">
+                <label for="gender">Cinsiyet:</label>
+                <select class="form-control" id="gender" name="gender" required>
+                    <option value="erkek">Erkek</option>
+                    <option value="kadın">Kadın</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="weight">Kilo (kg):</label>
+                <input type="number" step="0.1" class="form-control" id="weight" name="weight" required>
+            </div>
+            <div class="form-group">
+                <label for="height">Boy (cm):</label>
+                <input type="number" class="form-control" id="height" name="height" required>
+            </div>
+            <div class="form-group">
+                <label for="activity_level">Aktivite Seviyesi:</label>
+                <select class="form-control" id="activity_level" name="activity_level" required>
+                    <option value="düşük">Düşük</option>
+                    <option value="orta">Orta</option>
+                    <option value="yüksek">Yüksek</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="target_weight">Hedef Kilo (kg) (Opsiyonel):</label>
+                <input type="number" step="0.1" class="form-control" id="target_weight" name="target_weight">
+            </div>
+            <button type="submit" class="btn btn-primary">Diyet Planı Oluştur</button>
+        </form>
+
+        <!-- VKI Sonucu -->
+        {% if bmi %}
+        <hr>
+        <h3 class="mt-4">Vücut Kitle İndeksi (VKİ): {{ bmi }}</h3>
+        <h4>Sonuç:</h4>
+        <p class="text-info">{{ bmi_status }}</p>
+        <h5>İdeal Kilo Aralığı: {{ ideal_weight_range }}</h5>
+        {% endif %}
+
+        <!-- Diyet Planı Sonuçları -->
+        {% if calories %}
+        <hr>
+        <h3 class="mt-4">Günlük Kalori İhtiyacı: {{ calories }} kcal</h3>
+        <h4>Makro Besin Dağılımı:</h4>
+        <ul>
+            <li>Protein: {{ macros['protein'] }} g</li>
+            <li>Karbonhidrat: {{ macros['carbs'] }} g</li>
+            <li>Yağ: {{ macros['fats'] }} g</li>
+        </ul>
+
+        <h4>Öğünler:</h4>
+        <div class="mt-4">
+            <h5>Sabah</h5>
+            <div class="table-responsive">
+                {{ breakfast|safe }}
+            </div>
+        </div>
+
+        <div class="mt-4">
+            <h5>Öğle</h5>
+            <div class="table-responsive">
+                {{ lunch|safe }}
+            </div>
+        </div>
+
+        <div class="mt-4">
+            <h5>Akşam</h5>
+            <div class="table-responsive">
+                {{ dinner|safe }}
+            </div>
+        </div>
+
+        <!-- Yenile Butonu -->
+        {% if refresh %}
+        <div class="mt-4 text-center">
+            <form method="POST" action="/health_check">
+                <button type="submit" class="btn btn-success">Listeyi Yenile</button>
+            </form>
+        </div>
+        {% endif %}
+        {% endif %}
+
+        <!-- Yemek Önerisi -->
+        <hr>
+        <h2 class="mt-4">Yemek Önerisi</h2>
+        <form method="POST" action="/recommend">
+            <div class="form-group">
+                <label for="user_input">Yemek tercihinizi girin (Öğün tipi ve yemek türü):</label>
+                <input type="text" class="form-control" id="user_input" name="user_input" placeholder="Örnek: Vegan akşam yemeği" required>
+            </div>
+            <button type="submit" class="btn btn-secondary">Öneri Al</button>
+        </form>
+
+        {% if recommendation %}
+        <h3 class="mt-4">Yemek Önerileri:</h3>
+        <div class="table-responsive">
+            {{ recommendation|safe }}
+        </div>
+        {% endif %}
+
+        {% if word_mapping %}
+        <h3 class="mt-4">Kelime Anlamları:</h3>
+        <ul>
+            {% for word, mapping in word_mapping %}
+                <li><strong>{{ word }}:</strong> {{ mapping[0] }} - {{ mapping[1] }}</li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>
+
+
+
+
